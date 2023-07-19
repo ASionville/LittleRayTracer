@@ -47,14 +47,28 @@ Color backgroundColor(Ray r) {
 
 
 // Compute the color of a ray
-Color rayColor(Ray r) {
-    Sphere sphere = newSphere(newVector(0, 0, -1), 0.5);
-    double hit = raySphereIntersection(r, sphere);
+Color rayColor(Ray r, ObjectList ol) {
+
+    double hit = -1;
+
+    for (int i = 0; i < ol.size; i++) {
+        Sphere s = *(Sphere*)ol.objects[i];
+        double t = raySphereIntersection(r, s);
+        if (t > 0) {
+            if (hit < 0) {
+                hit = t;
+            }
+            else {
+                hit = fmin(hit, t);
+            }
+        }
+    }
 
     if (hit > 0) {
-        Vector normal = normalizeVector(subtractVector(pointAtTime(r, hit), sphere.center));
-        Color c1 = newColor(normal.x + 1, normal.y + 1, normal.z + 1);
-        return scaleColor(c1, 0.5);
+        Vector normal = normalizeVector(subtractVector(pointAtTime(r, hit), newVector(0, 0, -1)));
+        Color c = newColor(normal.x + 1, normal.y + 1, normal.z + 1);
+        return scaleColor(c, 0.5);
     }
+
     return backgroundColor(r);
 }

@@ -13,6 +13,6 @@ Ray newRay(Vector origin, Vector direction);
 Vector rayPointAt(Ray ray, double t);
 double raySphereIntersection(Ray ray, Sphere sphere);
 
-Color rayColor(Ray ray);
+Color rayColor(Ray ray, ObjectList ol);
 
 #endif // !RAY_H
