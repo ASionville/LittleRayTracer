@@ -7,9 +7,10 @@
 #include "color.h"
 #include "geometry.h"
 #include "camera.h"
+#include "utils.h"
 
 // Create a new camera
-Camera newCamera(Vector position, Vector up, Vector right, Vector forward, int width, int height, double fov) {
+Camera newCamera(Vector position, Vector up, Vector right, Vector forward, int width, int height, double fov, double focal_length) {
     Camera c;
     c.position = position;
     c.up = up;
@@ -18,6 +19,7 @@ Camera newCamera(Vector position, Vector up, Vector right, Vector forward, int w
     c.width = width;
     c.height = height;
     c.fov = fov;
+    c.focal_length = focal_length;
     return c;
 }
 
@@ -26,9 +28,15 @@ Ray cameraRay(Camera camera, int x, int y) {
     // Compute the aspect ratio
     double aspectRatio = (double)camera.width / (double)camera.height;
 
+    double rx = randomDouble(-0.7, 0.7);
+    double ry = randomDouble(-0.7, 0.7);
+
+    double x_with_offset = (double)x + rx;
+    double y_with_offset = (double)y + ry;
+
     // Compute the pixel coordinates
-    double px = (2.0 * ((x + 0.5) / camera.width) - 1.0) * aspectRatio * tan(camera.fov / 2.0);
-    double py = (1.0 - 2.0 * ((y + 0.5) / camera.height)) * tan(camera.fov / 2.0);
+    double px = (2.0 * ((x_with_offset + 0.5) / camera.width) - 1.0) * aspectRatio * tan(camera.fov / 2.0);
+    double py = (1.0 - 2.0 * ((y_with_offset + 0.5) / camera.height)) * tan(camera.fov / 2.0);
 
     // Compute the direction
     Vector direction = addVector(camera.forward, addVector(scaleVector(camera.right, px), scaleVector(camera.up, py)));
@@ -41,17 +49,24 @@ Ray cameraRay(Camera camera, int x, int y) {
 }
 
 // Render the scene
-Image render(Camera camera, ObjectList ol) {
+Image render(Camera camera, ObjectList ol, int samples_per_pixel) {
+
+    double antialiasing_correction = 1.0 / (double)samples_per_pixel;
+
     // Create the image
     Image image = newImage(camera.width, camera.height);
 
     for (int y = camera.height - 1; y >= 0; y--) {
         for (int x = 0; x < camera.width; x++) {
-            // Compute the ray for the current pixel
-            Ray ray = cameraRay(camera, x, y);
-
-            // Compute the color for the current ray
-            Color color = rayColor(ray, ol);
+            // Compute the color with antialiasing
+            Ray ray;
+            Color color = newColor(0.0, 0.0, 0.0);
+            for (int s = 0; s < samples_per_pixel; s++) {
+                ray = cameraRay(camera, x, y);
+                // Compute the color
+                color = addColor(color, rayColor(ray, ol));
+            }
+            color = scaleColor(color, antialiasing_correction);
 
             // Set the pixel color in the image
             // Need to flip the y-axis
