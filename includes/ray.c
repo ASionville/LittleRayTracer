@@ -72,9 +72,9 @@ Color rayColor(Ray r, ObjectList ol, int max_bounces) {
     if (hit > EPSILON) {
         // Bounce the ray
         Vector p = pointAtTime(r, hit);
-        Vector target = addVector(p, randomInUnitSphere());
+        Vector target = addVector(p, randomUnitVector());
         Ray bounce = newRay(p, subtractVector(target, p));
-        return scaleColor(rayColor(bounce, ol, max_bounces - 1), 0.7);
+        return scaleColor(rayColor(bounce, ol, max_bounces - 1), 2.0/3.0);
     }
 
     return backgroundColor(r);

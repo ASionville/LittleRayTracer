@@ -37,5 +37,5 @@ Vector randomInUnitSphere() {
 }
 
 Vector randomUnitVector() {
-    return normalizeVector(randomInUnitSphere());
+    return normalizeVector(randomVector());
 }
