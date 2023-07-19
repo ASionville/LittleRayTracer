@@ -28,8 +28,8 @@ Ray cameraRay(Camera camera, int x, int y) {
     // Compute the aspect ratio
     double aspectRatio = (double)camera.width / (double)camera.height;
 
-    double rx = randomDouble(-0.7, 0.7);
-    double ry = randomDouble(-0.7, 0.7);
+    double rx = randomRange(-0.7, 0.7);
+    double ry = randomRange(-0.7, 0.7);
 
     double x_with_offset = (double)x + rx;
     double y_with_offset = (double)y + ry;
@@ -49,7 +49,7 @@ Ray cameraRay(Camera camera, int x, int y) {
 }
 
 // Render the scene
-Image render(Camera camera, ObjectList ol, int samples_per_pixel) {
+Image render(Camera camera, ObjectList ol, int samples_per_pixel, int max_bounces, float gamma) {
 
     double antialiasing_correction = 1.0 / (double)samples_per_pixel;
 
@@ -64,9 +64,10 @@ Image render(Camera camera, ObjectList ol, int samples_per_pixel) {
             for (int s = 0; s < samples_per_pixel; s++) {
                 ray = cameraRay(camera, x, y);
                 // Compute the color
-                color = addColor(color, rayColor(ray, ol));
+                color = addColor(color, rayColor(ray, ol, max_bounces));
             }
             color = scaleColor(color, antialiasing_correction);
+            color = gammaCorrect(color, gamma);
 
             // Set the pixel color in the image
             // Need to flip the y-axis

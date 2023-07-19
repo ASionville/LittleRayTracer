@@ -20,6 +20,6 @@ typedef struct
 Camera newCamera(Vector position, Vector up, Vector right, Vector forward, int width, int height, double fov, double focal_length);
 Ray cameraRay(Camera camera, int x, int y); 
 
-Image render(Camera camera, ObjectList ol, int samples_per_pixel);
+Image render(Camera camera, ObjectList ol, int samples_per_pixel, int max_bounces, float gamma);
 
 #endif // !CAMERA_H

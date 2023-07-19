@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 #include "color.h"
 
 // Create a new color
@@ -60,6 +61,14 @@ Color lerpColor(Color c1, Color c2, double t) {
     c.g = c1.g + (c2.g - c1.g) * t;
     c.b = c1.b + (c2.b - c1.b) * t;
     return c;
+}
+
+Color gammaCorrect(Color c, float gamma) {
+    Color c2;
+    c2.r = pow(c.r, gamma);
+    c2.g = pow(c.g, gamma);
+    c2.b = pow(c.b, gamma);
+    return c2;
 }
 
 // Print a color

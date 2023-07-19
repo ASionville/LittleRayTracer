@@ -19,6 +19,8 @@ Color mulColor(Color c1, Color c2);
 Color scaleColor(Color c, double s);
 Color lerpColor(Color c1, Color c2, double t);
 
+Color gammaCorrect(Color c, float gamma);
+
 void printColor(Color c);
 
 #endif // !COLOR_H
