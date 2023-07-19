@@ -41,7 +41,7 @@ Ray cameraRay(Camera camera, int x, int y) {
 }
 
 // Render the scene
-Image render(Camera camera) {
+Image render(Camera camera, ObjectList ol) {
     // Create the image
     Image image = newImage(camera.width, camera.height);
 
@@ -51,10 +51,11 @@ Image render(Camera camera) {
             Ray ray = cameraRay(camera, x, y);
 
             // Compute the color for the current ray
-            Color color = rayColor(ray);
+            Color color = rayColor(ray, ol);
 
             // Set the pixel color in the image
-            setPixel(image, x, y, color);
+            // Need to flip the y-axis
+            setPixel(image, x, camera.height - y - 1, color);
         }
     }
 
