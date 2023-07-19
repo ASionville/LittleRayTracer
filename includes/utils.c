@@ -31,7 +31,11 @@ Vector randomVectorRange(double min, double max) {
 Vector randomInUnitSphere() {
     while (true) {
         Vector p = randomVectorRange(-1, 1);
-        if (lengthSquaredVector(p) >= 1) continue;
+        if (lengthVector(p) >= 1) continue;
         return p;
     }
+}
+
+Vector randomUnitVector() {
+    return normalizeVector(randomInUnitSphere());
 }

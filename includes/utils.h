@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+#include "vector.h"
 
 #define EPSILON 0.000001
 
@@ -8,5 +9,7 @@ double clamp(double x, double min, double max);
 
 Vector randomVector();
 Vector randomVectorRange(double min, double max);
+Vector randomInUnitSphere();
+Vector randomUnitVector();
 
 #endif // !UTILS_H
