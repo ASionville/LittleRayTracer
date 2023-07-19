@@ -6,6 +6,7 @@
 #include "ray.h"
 #include "color.h"
 #include "geometry.h"
+#include "utils.h"
 
 // Create a new ray
 Ray newRay(Vector origin, Vector direction) {
@@ -47,7 +48,11 @@ Color backgroundColor(Ray r) {
 
 
 // Compute the color of a ray
-Color rayColor(Ray r, ObjectList ol) {
+Color rayColor(Ray r, ObjectList ol, int max_bounces) {
+
+    if (max_bounces <= 0) {
+        return newColor(0, 0, 0);
+    }
 
     double hit = -1;
 
@@ -64,10 +69,12 @@ Color rayColor(Ray r, ObjectList ol) {
         }
     }
 
-    if (hit > 0) {
-        Vector normal = normalizeVector(subtractVector(pointAtTime(r, hit), newVector(0, 0, -1)));
-        Color c = newColor(normal.x + 1, normal.y + 1, normal.z + 1);
-        return scaleColor(c, 0.5);
+    if (hit > EPSILON) {
+        // Bounce the ray
+        Vector p = pointAtTime(r, hit);
+        Vector target = addVector(p, randomInUnitSphere());
+        Ray bounce = newRay(p, subtractVector(target, p));
+        return scaleColor(rayColor(bounce, ol, max_bounces - 1), 0.7);
     }
 
     return backgroundColor(r);
