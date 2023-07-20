@@ -6,76 +6,171 @@
 #include "ray.h"
 #include "color.h"
 #include "geometry.h"
+#include "material.h"
+#include "light.h"
+#include "world.h"
 #include "utils.h"
 
 // Create a new ray
-Ray newRay(Vector origin, Vector direction) {
-    Ray r;
-    r.origin = origin;
-    r.direction = direction;
-    return r;
+Ray newRay(Vector origin, Vector direction)
+{
+    Ray ray;
+    ray.origin = origin;
+    ray.direction = direction;
+    return ray;
 }
 
 // Point on ray at time t
-Vector pointAtTime(Ray r, double t) {
-    return addVector(r.origin, scaleVector(r.direction, t));
+Vector pointAtTime(Ray ray, double t)
+{
+    return addVector(ray.origin, scaleVector(ray.direction, t));
 }
 
 // Compute the intersection of a ray and a sphere (returns -1 if no intersection, otherwise returns t)
-double raySphereIntersection(Ray ray, Sphere sphere) {
+double raySphereIntersection(Ray ray, Sphere sphere)
+{
     Vector oc = subtractVector(ray.origin, sphere.center);
     double a = pow(lengthVector(ray.direction), 2);
     double b = dotVector(oc, ray.direction);
     double c = pow(lengthVector(oc), 2) - pow(sphere.radius, 2);
     double discriminant = b * b - a * c;
 
-    if (discriminant < 0) {
+    if (discriminant < 0)
+    {
         return -1;
     }
-    else {
+    else
+    {
         return (-b - sqrt(discriminant)) / a;
     }
 }
 
 // Get background color
-Color backgroundColor(Ray r) {
-    Vector unit_direction = normalizeVector(r.direction);
+Color backgroundColor(Ray ray, World world)
+{
+    Vector unit_direction = normalizeVector(ray.direction);
     double background_lerp_factor = 0.5 * (unit_direction.y + 1.0);
-    Color c1 = newColor(0.5, 0.7, 1.0);
-    Color c2 = newColor(1.0, 1.0, 1.0);
-    return lerpColor(c1, c2, background_lerp_factor);
+    return lerpColor(world.horizonColor, world.zenithColor, background_lerp_factor);
 }
 
+WorldObject *getClosestHit(Ray ray, World world, double *closestHit)
+{
+    // Returns the object and the distance if there is a hit, otherwise returns NULL
+    // Also returns the distance to the closest hit via the closestHit pointer
 
-// Compute the color of a ray
-Color rayColor(Ray r, ObjectList ol, int max_bounces) {
+    WorldObject *obj = NULL;
+    WorldObject *closestObject = NULL;
+    *closestHit = -1;
 
-    if (max_bounces <= 0) {
-        return newColor(0, 0, 0);
-    }
+    for (int i = 0; i < world.numObjects; i++)
+    {
+        obj = world.objects[i];
+        double currentHit = -1;
 
-    double hit = -1;
-
-    for (int i = 0; i < ol.size; i++) {
-        Sphere s = *(Sphere*)ol.objects[i];
-        double t = raySphereIntersection(r, s);
-        if (t > 0) {
-            if (hit < 0) {
-                hit = t;
+        switch (obj->type)
+        {
+        case SPHERE:
+            currentHit = raySphereIntersection(ray, *(Sphere *)obj->geometry);
+            break;
+        default:
+            break;
+        }
+        if (currentHit > 0)
+        {
+            if (*closestHit < 0)
+            {
+                *closestHit = currentHit;
+                closestObject = obj;
             }
-            else {
-                hit = fmin(hit, t);
+            else
+            {
+                if (currentHit < *closestHit)
+                {
+                    *closestHit = currentHit;
+                    closestObject = obj;
+                }
             }
         }
     }
+    return closestObject;
+}
 
-    if (hit > EPSILON) {
-        // Bounce the ray
-        Vector p = pointAtTime(r, hit);
-        Vector target = addVector(p, randomUnitVector());
-        Ray bounce = newRay(p, subtractVector(target, p));
-        return scaleColor(rayColor(bounce, ol, max_bounces - 1), 2.0/3.0);
+Color computeDirectIllumination(Ray ray, World world, WorldObject obj, Vector point, Vector normal)
+{
+    Color direct_color = newColor(0, 0, 0);
+    Light light;
+
+    // Go trough all lights (all lights are point lights for now)
+    for (int i = 0; i < world.numLights; i++)
+    {
+        light = *(world.lights[i]);
+        Vector to_light = subtractVector(light.position, point);
+        Vector light_direction = normalizeVector(to_light);
+        double light_distance = lengthVector(to_light);
+
+        // Check if the light is visible
+        Ray shadow_ray = newRay(point, light_direction);
+        double shadow_hit = -1;
+        WorldObject* shadow_object = getClosestHit(shadow_ray, world, &shadow_hit);
+
+        if (shadow_object == NULL || shadow_hit > light_distance)
+        {
+            // Diffuse lighting
+            Color diffuse_color = newColor(0, 0, 0);
+            double diffuse_factor = dotVector(light_direction, normal);
+            if (diffuse_factor > 0)
+            {
+                diffuse_color = scaleColor(light.color, diffuse_factor);
+            }
+
+            // Specular lighting (Phong model)
+            Color specular_color = newColor(0, 0, 0);
+            Vector reflection = reflectVector(light_direction, normal);
+            double r_dot_v = dotVector(reflection, normalizeVector(ray.direction));
+            if (r_dot_v > 0)
+            {
+                double specular_factor = pow(r_dot_v, obj.material->roughness);
+                specular_color = scaleColor(light.color, specular_factor);
+            }
+
+            // Compute the direct illumination
+            Color light_color = addColor(diffuse_color, specular_color);
+            direct_color = addColor(direct_color, light_color);
+
+        }
+    }
+    return direct_color;
+}
+
+// Compute the color of a ray
+Color rayColor(Ray ray, World world, int max_bounces)
+{
+    // If we've reached the maximum number of bounces, return black
+    if (max_bounces <= 0)
+    {
+        return newColor(0, 0, 0);
+    }
+    
+    double hit = -1;
+    WorldObject *closestObject = getClosestHit(ray, world, &hit);
+    if (closestObject != NULL)
+    {
+        Vector hitPoint;
+        Vector normal;
+        switch (closestObject->type)
+        {
+        case SPHERE:
+            hitPoint = pointAtTime(ray, hit);
+            normal = getSphereLocalNormal(*(Sphere*)(closestObject->geometry), hitPoint);
+
+        default:
+            break;
+        }
+
+        // Compute the direct illumination
+        Color direct_color = computeDirectIllumination(ray, world, *closestObject, hitPoint, normal);
+        return direct_color;
     }
 
-    return backgroundColor(r);
+    return backgroundColor(ray, world);
 }
