@@ -81,6 +81,12 @@ Vector normalizeVector(Vector v) {
     return scaleVector(v, 1 / length);
 }
 
+Vector reflectVector(Vector incident_direction, Vector surface_normal) {
+    double dot_product = dotVector(incident_direction, surface_normal);
+    Vector reflection_direction = subtractVector(incident_direction, scaleVector(surface_normal, 2 * dot_product));
+    return reflection_direction;
+}
+
 // Print a vector
 void printVector(Vector v) {
     printf("<%.2f, %.2f, %.2f>", v.x, v.y, v.z);

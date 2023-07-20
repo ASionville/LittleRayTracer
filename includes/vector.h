@@ -22,6 +22,8 @@ Vector crossVector(Vector v1, Vector v2);
 double lengthVector(Vector v);
 Vector normalizeVector(Vector v);
 
+Vector reflectVector(Vector incident_direction, Vector surface_normal);
+
 void printVector(Vector v);
 
 #endif
