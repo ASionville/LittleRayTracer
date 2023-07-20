@@ -5,19 +5,11 @@
 
 typedef struct
 {
-    void** objects;
-    int size;
-} ObjectList;
-
-typedef struct
-{
     Vector center;
     double radius;
 } Sphere;
 
 Sphere newSphere(Vector center, double radius);
-
-ObjectList newObjectList();
-void addObject(ObjectList* ol, void* object);
+Vector getSphereLocalNormal(Sphere sphere, Vector point);
 
 #endif // !GEOMETRY_H

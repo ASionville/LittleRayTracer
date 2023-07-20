@@ -12,17 +12,6 @@ Sphere newSphere(Vector center, double radius) {
     return s;
 }
 
-// Create a new object list
-ObjectList newObjectList() {
-    ObjectList ol;
-    ol.objects = malloc(0);
-    ol.size = 0;
-    return ol;
-}
-
-// Add an object to the object list
-void addObject(ObjectList* ol, void* object) {
-    ol->size++;
-    ol->objects = realloc(ol->objects, ol->size * sizeof(void*));
-    ol->objects[ol->size - 1] = object;
+Vector getSphereLocalNormal(Sphere sphere, Vector point) {
+    return normalizeVector(subtractVector(point, sphere.center));
 }
