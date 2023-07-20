@@ -5,6 +5,10 @@
 #include "includes/vector.h"
 #include "includes/camera.h"
 #include "includes/image.h"
+#include "includes/geometry.h"
+#include "includes/material.h"
+#include "includes/light.h"
+#include "includes/world.h"
 
 #define WIDTH 500
 #define HEIGHT 400
@@ -25,13 +29,21 @@ int main(int argc, char *argv[]) {
     Vector forward = crossVector(up, right);
     Camera camera = newCamera(position, up, right, forward, WIDTH, HEIGHT, PI / 2.0, 1.0);
 
-    ObjectList ol = newObjectList();
-    Sphere s1 = newSphere(newVector(0, 0, -1), 0.5);
-    addObject(&ol, &s1);
-    Sphere ground = newSphere(newVector(0, -100.5, -1), 100);
-    addObject(&ol, &ground);
+    World* world = newWorld(newColor(0.5, 0.7, 1.0), newColor(1.0, 1.0, 1.0));
 
-    Image image = render(camera, ol, SAMPLES_PER_PIXEL, MAX_DEPTH, GAMMA);
+    Material white = newMaterial(newColor(0.8, 0.8, 0.8), 0.0, 0.0, 0.0, newColor(0.0, 0.0, 0.0));
+    Sphere sphere = newSphere(newVector(0, 0, -1), 0.5);
+    WorldObject* sphereObject = newWorldObject(SPHERE, &sphere, &white);
+    addObjectToWorld(world, sphereObject);
+
+    Sphere ground = newSphere(newVector(0, -100.5, -1), 100);
+    WorldObject* groundObject = newWorldObject(0, &ground, &white);
+    addObjectToWorld(world, groundObject);
+
+    Light* light = newLight(newVector(0, 1, -0.3), newColor(1.0, 1.0, 1.0), 0.8);
+    addLightToWorld(world, light);
+
+    Image image = render(camera, *world, SAMPLES_PER_PIXEL, MAX_DEPTH, GAMMA);
     saveImage(image, "test.ppm");
     printf("Done!\n");
 }
