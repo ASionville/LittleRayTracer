@@ -7,6 +7,8 @@
 #include "color.h"
 #include "geometry.h"
 #include "camera.h"
+#include "world.h"
+#include "image.h"
 #include "utils.h"
 
 // Create a new camera
@@ -49,13 +51,12 @@ Ray cameraRay(Camera camera, int x, int y) {
 }
 
 // Render the scene
-Image render(Camera camera, ObjectList ol, int samples_per_pixel, int max_bounces, float gamma) {
+Image render(Camera camera, World world, int samples_per_pixel, int max_bounces, float gamma) {
 
     double antialiasing_correction = 1.0 / (double)samples_per_pixel;
 
     // Create the image
     Image image = newImage(camera.width, camera.height);
-
     for (int y = camera.height - 1; y >= 0; y--) {
         for (int x = 0; x < camera.width; x++) {
             // Compute the color with antialiasing
@@ -64,7 +65,7 @@ Image render(Camera camera, ObjectList ol, int samples_per_pixel, int max_bounce
             for (int s = 0; s < samples_per_pixel; s++) {
                 ray = cameraRay(camera, x, y);
                 // Compute the color
-                color = addColor(color, rayColor(ray, ol, max_bounces));
+                color = addColor(color, rayColor(ray, world, max_bounces));
             }
             color = scaleColor(color, antialiasing_correction);
             color = gammaCorrect(color, gamma);

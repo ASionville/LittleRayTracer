@@ -4,6 +4,7 @@
 #include "vector.h"
 #include "ray.h"
 #include "image.h"
+#include "world.h"
 
 typedef struct
 {
@@ -20,6 +21,6 @@ typedef struct
 Camera newCamera(Vector position, Vector up, Vector right, Vector forward, int width, int height, double fov, double focal_length);
 Ray cameraRay(Camera camera, int x, int y); 
 
-Image render(Camera camera, ObjectList ol, int samples_per_pixel, int max_bounces, float gamma);
+Image render(Camera camera, World world, int samples_per_pixel, int max_bounces, float gamma);
 
 #endif // !CAMERA_H
