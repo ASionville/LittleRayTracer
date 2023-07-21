@@ -5,16 +5,20 @@
 #include "image.h"
 
 // Create a new image
-Image newImage(int width, int height) {
+Image newImage(int width, int height)
+{
     Image img;
     img.width = width;
     img.height = height;
-    img.pixels = malloc(width * sizeof(Color*));
-    for (int i = 0; i < width; i++) {
+    img.pixels = malloc(width * sizeof(Color *));
+    for (int i = 0; i < width; i++)
+    {
         img.pixels[i] = malloc(height * sizeof(Color));
     }
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++)
+    {
+        for (int i = 0; i < width; i++)
+        {
             img.pixels[i][j] = newColor(0, 0, 0);
         }
     }
@@ -22,9 +26,11 @@ Image newImage(int width, int height) {
 }
 
 // Save BMP image to file
-void saveImage(Image image, char* filename) {
+void saveImage(Image image, char *filename)
+{
     FILE *f = fopen(filename, "wb");
-    if (!f) {
+    if (!f)
+    {
         fprintf(stderr, "Error: could not open file %s\n", filename);
         exit(1);
     }
@@ -33,7 +39,7 @@ void saveImage(Image image, char* filename) {
     fprintf(f, "P3\n%d %d\n255\n", image.width, image.height);
 
     // BMP image data
-    for (int j = image.height-1; j>=0; j--)
+    for (int j = image.height - 1; j >= 0; j--)
     {
         for (int i = 0; i < image.width; i++)
         {
@@ -48,6 +54,7 @@ void saveImage(Image image, char* filename) {
 }
 
 // Set a pixel in the image
-void setPixel(Image image, int x, int y, Color color) {
+void setPixel(Image image, int x, int y, Color color)
+{
     image.pixels[x][y] = color;
 }

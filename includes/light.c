@@ -5,7 +5,8 @@
 #include "color.h"
 #include "light.h"
 
-Light* newLight(Vector position, Color color, double intensity) {
+Light *newLight(Vector position, Color color, double intensity)
+{
     Light *l = malloc(sizeof(Light));
     l->position = position;
     l->color = color;

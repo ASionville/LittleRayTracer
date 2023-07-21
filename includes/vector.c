@@ -5,7 +5,8 @@
 #include "vector.h"
 
 // Create a new vector
-Vector newVector(double x, double y, double z) {
+Vector newVector(double x, double y, double z)
+{
     Vector v;
     v.x = x;
     v.y = y;
@@ -14,17 +15,20 @@ Vector newVector(double x, double y, double z) {
 }
 
 // Check if two vectors are equal
-bool equalVector(Vector v1, Vector v2) {
+bool equalVector(Vector v1, Vector v2)
+{
     return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
 }
 
 // Check if a vector is zero
-bool isZeroVector(Vector v) {
+bool isZeroVector(Vector v)
+{
     return v.x == 0 && v.y == 0 && v.z == 0;
 }
 
 // Add two vectors
-Vector addVector(Vector v1, Vector v2) {
+Vector addVector(Vector v1, Vector v2)
+{
     Vector v;
     v.x = v1.x + v2.x;
     v.y = v1.y + v2.y;
@@ -33,7 +37,8 @@ Vector addVector(Vector v1, Vector v2) {
 }
 
 // Subtract two vectors
-Vector subtractVector(Vector v1, Vector v2) {
+Vector subtractVector(Vector v1, Vector v2)
+{
     Vector v;
     v.x = v1.x - v2.x;
     v.y = v1.y - v2.y;
@@ -42,7 +47,8 @@ Vector subtractVector(Vector v1, Vector v2) {
 }
 
 // Multiply a vector by a scalar
-Vector scaleVector(Vector v, double s) {
+Vector scaleVector(Vector v, double s)
+{
     Vector v2;
     v2.x = v.x * s;
     v2.y = v.y * s;
@@ -51,13 +57,16 @@ Vector scaleVector(Vector v, double s) {
 }
 
 // Compute the dot product of two vectors
-double dotVector(Vector v1, Vector v2) {
+double dotVector(Vector v1, Vector v2)
+{
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
 // Compute the cross product of two vectors
-Vector crossVector(Vector v1, Vector v2) {
-    if (equalVector(v1, v2)) {
+Vector crossVector(Vector v1, Vector v2)
+{
+    if (equalVector(v1, v2))
+    {
         return newVector(0, 0, 0);
     }
     Vector v;
@@ -68,26 +77,31 @@ Vector crossVector(Vector v1, Vector v2) {
 }
 
 // Compute the length of a vector
-double lengthVector(Vector v) {
+double lengthVector(Vector v)
+{
     return sqrt(dotVector(v, v));
 }
 
 // Normalize a vector
-Vector normalizeVector(Vector v) {
+Vector normalizeVector(Vector v)
+{
     double length = lengthVector(v);
-    if (length == 0) {
+    if (length == 0)
+    {
         return newVector(0, 0, 0);
     }
     return scaleVector(v, 1 / length);
 }
 
-Vector reflectVector(Vector incident_direction, Vector surface_normal) {
+Vector reflectVector(Vector incident_direction, Vector surface_normal)
+{
     double dot_product = dotVector(incident_direction, surface_normal);
     Vector reflection_direction = subtractVector(incident_direction, scaleVector(surface_normal, 2 * dot_product));
     return reflection_direction;
 }
 
 // Print a vector
-void printVector(Vector v) {
+void printVector(Vector v)
+{
     printf("<%.2f, %.2f, %.2f>", v.x, v.y, v.z);
 }

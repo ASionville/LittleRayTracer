@@ -1,6 +1,8 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include <stdbool.h>
+
 typedef struct {
     double r;
     double g;

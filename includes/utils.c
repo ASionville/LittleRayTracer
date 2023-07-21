@@ -6,36 +6,47 @@
 
 #define PI 3.14159265359
 
-double random() {
+double random()
+{
     return (double)rand() / (double)RAND_MAX;
 }
 
-double randomRange(double min, double max) {
+double randomRange(double min, double max)
+{
     return min + (max - min) * random();
 }
 
-double clamp(double x, double min, double max) {
-    if (x < min) return min;
-    if (x > max) return max;
+double clamp(double x, double min, double max)
+{
+    if (x < min)
+        return min;
+    if (x > max)
+        return max;
     return x;
 }
 
-Vector randomVector() {
+Vector randomVector()
+{
     return newVector(random(), random(), random());
 }
 
-Vector randomVectorRange(double min, double max) {
+Vector randomVectorRange(double min, double max)
+{
     return newVector(randomRange(min, max), randomRange(min, max), randomRange(min, max));
 }
 
-Vector randomInUnitSphere() {
-    while (true) {
+Vector randomInUnitSphere()
+{
+    while (true)
+    {
         Vector p = randomVectorRange(-1, 1);
-        if (lengthVector(p) >= 1) continue;
+        if (lengthVector(p) >= 1)
+            continue;
         return p;
     }
 }
 
-Vector randomUnitVector() {
+Vector randomUnitVector()
+{
     return normalizeVector(randomVector());
 }

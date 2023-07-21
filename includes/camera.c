@@ -12,7 +12,8 @@
 #include "utils.h"
 
 // Create a new camera
-Camera newCamera(Vector position, Vector up, Vector right, Vector forward, int width, int height, double fov, double focal_length) {
+Camera newCamera(Vector position, Vector up, Vector right, Vector forward, int width, int height, double fov, double focal_length)
+{
     Camera c;
     c.position = position;
     c.up = up;
@@ -26,7 +27,8 @@ Camera newCamera(Vector position, Vector up, Vector right, Vector forward, int w
 }
 
 // Compute the ray for a given pixel
-Ray cameraRay(Camera camera, int x, int y) {
+Ray cameraRay(Camera camera, int x, int y)
+{
     // Compute the aspect ratio
     double aspectRatio = (double)camera.width / (double)camera.height;
 
@@ -51,18 +53,22 @@ Ray cameraRay(Camera camera, int x, int y) {
 }
 
 // Render the scene
-Image render(Camera camera, World world, int samples_per_pixel, int max_bounces, float gamma) {
+Image render(Camera camera, World world, int samples_per_pixel, int max_bounces, float gamma)
+{
 
     double antialiasing_correction = 1.0 / (double)samples_per_pixel;
 
     // Create the image
     Image image = newImage(camera.width, camera.height);
-    for (int y = camera.height - 1; y >= 0; y--) {
-        for (int x = 0; x < camera.width; x++) {
+    for (int y = camera.height - 1; y >= 0; y--)
+    {
+        for (int x = 0; x < camera.width; x++)
+        {
             // Compute the color with antialiasing
             Ray ray;
             Color color = newColor(0.0, 0.0, 0.0);
-            for (int s = 0; s < samples_per_pixel; s++) {
+            for (int s = 0; s < samples_per_pixel; s++)
+            {
                 ray = cameraRay(camera, x, y);
                 // Compute the color
                 color = addColor(color, rayColor(ray, world, max_bounces));

@@ -5,7 +5,8 @@
 #include "color.h"
 
 // Create a new color
-Color newColor(double r, double g, double b) {
+Color newColor(double r, double g, double b)
+{
     Color c;
     c.r = r;
     c.g = g;
@@ -14,12 +15,14 @@ Color newColor(double r, double g, double b) {
 }
 
 // Check if two colors are equal
-bool equalColor(Color c1, Color c2) {
+bool equalColor(Color c1, Color c2)
+{
     return c1.r == c2.r && c1.g == c2.g && c1.b == c2.b;
 }
 
 // Add two colors
-Color addColor(Color c1, Color c2) {
+Color addColor(Color c1, Color c2)
+{
     Color c;
     c.r = c1.r + c2.r;
     c.g = c1.g + c2.g;
@@ -28,7 +31,8 @@ Color addColor(Color c1, Color c2) {
 }
 
 // Subtract two colors
-Color subtractColor(Color c1, Color c2) {
+Color subtractColor(Color c1, Color c2)
+{
     Color c;
     c.r = c1.r - c2.r;
     c.g = c1.g - c2.g;
@@ -37,7 +41,8 @@ Color subtractColor(Color c1, Color c2) {
 }
 
 // Multiply two colors
-Color mulColor(Color c1, Color c2) {
+Color mulColor(Color c1, Color c2)
+{
     Color c;
     c.r = c1.r * c2.r;
     c.g = c1.g * c2.g;
@@ -46,7 +51,8 @@ Color mulColor(Color c1, Color c2) {
 }
 
 // Multiply a color by a scalar
-Color scaleColor(Color c, double s) {
+Color scaleColor(Color c, double s)
+{
     Color c2;
     c2.r = c.r * s;
     c2.g = c.g * s;
@@ -55,7 +61,8 @@ Color scaleColor(Color c, double s) {
 }
 
 // Lerp between two colors
-Color lerpColor(Color c1, Color c2, double t) {
+Color lerpColor(Color c1, Color c2, double t)
+{
     Color c;
     c.r = c1.r + (c2.r - c1.r) * t;
     c.g = c1.g + (c2.g - c1.g) * t;
@@ -63,7 +70,8 @@ Color lerpColor(Color c1, Color c2, double t) {
     return c;
 }
 
-Color gammaCorrect(Color c, float gamma) {
+Color gammaCorrect(Color c, float gamma)
+{
     Color c2;
     c2.r = pow(c.r, gamma);
     c2.g = pow(c.g, gamma);
@@ -72,6 +80,7 @@ Color gammaCorrect(Color c, float gamma) {
 }
 
 // Print a color
-void printColor(Color c) {
+void printColor(Color c)
+{
     printf("(%f, %f, %f)\n", c.r, c.g, c.b);
 }

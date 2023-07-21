@@ -5,13 +5,15 @@
 #include "geometry.h"
 
 // Create a new sphere
-Sphere newSphere(Vector center, double radius) {
+Sphere newSphere(Vector center, double radius)
+{
     Sphere s;
     s.center = center;
     s.radius = radius;
     return s;
 }
 
-Vector getSphereLocalNormal(Sphere sphere, Vector point) {
+Vector getSphereLocalNormal(Sphere sphere, Vector point)
+{
     return normalizeVector(subtractVector(point, sphere.center));
 }

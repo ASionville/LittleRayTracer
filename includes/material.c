@@ -5,7 +5,8 @@
 #include "material.h"
 
 // Create a new material
-Material newMaterial(Color color, double metallic, double roughness, double reflectivity, Color emission) {
+Material newMaterial(Color color, double metallic, double roughness, double reflectivity, Color emission)
+{
     Material m;
     m.color = color;
     m.metallic = metallic;
