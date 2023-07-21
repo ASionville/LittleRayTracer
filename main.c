@@ -4,6 +4,7 @@
 #include <time.h>
 #include "includes/vector.h"
 #include "includes/camera.h"
+#include "includes/color.h"
 #include "includes/image.h"
 #include "includes/geometry.h"
 #include "includes/material.h"
@@ -14,10 +15,10 @@
 #define HEIGHT 400
 #define PI 3.14159265359
 
-#define SAMPLES_PER_PIXEL 50
-#define MAX_DEPTH 50
+#define SAMPLES_PER_PIXEL 70
+#define MAX_DEPTH 10
 
-#define GAMMA 2.0
+#define GAMMA 2.2
 
 int main(int argc, char *argv[]) {
 
@@ -31,16 +32,18 @@ int main(int argc, char *argv[]) {
 
     World* world = newWorld(newColor(0.5, 0.7, 1.0), newColor(1.0, 1.0, 1.0));
 
-    Material white = newMaterial(newColor(0.8, 0.8, 0.8), 0.0, 0.0, 0.0, newColor(0.0, 0.0, 0.0));
-    Sphere sphere = newSphere(newVector(0, 0, -1), 0.5);
-    WorldObject* sphereObject = newWorldObject(SPHERE, &sphere, &white);
+    Material grey = newMaterial(newColor(0.95, 0.95, 0.95), 0.0, 0.1, 0.9, newColor(0.0, 0.0, 0.0));
+    Material white = newMaterial(newColor(1.0, 1.0, 1.0), 0.0, 0.3, 0.9, newColor(0.0, 0.0, 0.0));
+
+    Sphere sphere = newSphere(newVector(0.51, 0, -1), 0.5);
+    WorldObject* sphereObject = newWorldObject(SPHERE, &sphere, &grey);
     addObjectToWorld(world, sphereObject);
 
-    Sphere ground = newSphere(newVector(0, -100.5, -1), 100);
+    Sphere ground = newSphere(newVector(-0.51, 0, -1), 0.5);
     WorldObject* groundObject = newWorldObject(0, &ground, &white);
     addObjectToWorld(world, groundObject);
 
-    Light* light = newLight(newVector(0, 1, -0.3), newColor(1.0, 1.0, 1.0), 0.8);
+    Light* light = newLight(newVector(0, 15, -0.5), newColor(1.0, 1.0, 1.0), 1.0);
     addLightToWorld(world, light);
 
     Image image = render(camera, *world, SAMPLES_PER_PIXEL, MAX_DEPTH, GAMMA);
