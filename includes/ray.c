@@ -95,12 +95,13 @@ WorldObject *getClosestHit(Ray ray, World world, double *closestHit)
     return closestObject;
 }
 
+// Compute the direct illumination of a point
 Color computeDirectIllumination(Ray ray, World world, WorldObject obj, Vector point, Vector normal)
 {
     Color direct_color = newColor(0, 0, 0);
     Light light;
 
-    // Go trough all lights (all lights are point lights for now)
+    // Go through all lights (all lights are point lights for now)
     for (int i = 0; i < world.numLights; i++)
     {
         light = *(world.lights[i]);
@@ -120,37 +121,55 @@ Color computeDirectIllumination(Ray ray, World world, WorldObject obj, Vector po
             double diffuse_factor = dotVector(light_direction, normal);
             if (diffuse_factor > 0)
             {
-                diffuse_color = scaleColor(light.color, diffuse_factor);
+                diffuse_color = scaleColor(light.color, light.intensity * diffuse_factor);
             }
 
             // Specular lighting (Phong model)
             Color specular_color = newColor(0, 0, 0);
             Vector reflection = reflectVector(light_direction, normal);
-            double r_dot_v = dotVector(reflection, normalizeVector(ray.direction));
+            Vector view_direction = normalizeVector(ray.direction);
+            double r_dot_v = dotVector(reflection, view_direction); // Use reflection and view direction
             if (r_dot_v > 0)
             {
-                double specular_factor = pow(r_dot_v, obj.material->roughness);
-                specular_color = scaleColor(light.color, specular_factor);
+                double specular_factor = pow(r_dot_v, 1.0 - obj.material->roughness);
+                specular_color = scaleColor(light.color, light.intensity * specular_factor);
             }
 
             // Compute the direct illumination
             Color light_color = addColor(diffuse_color, specular_color);
             direct_color = addColor(direct_color, light_color);
-
         }
     }
     return direct_color;
 }
 
-// Compute the color of a ray
-Color rayColor(Ray ray, World world, int max_bounces)
+// Compute the reflections (indirect illumination) of a point
+Color computeIndirectIllumination(Ray ray, World world, WorldObject obj, Vector normal, Vector hitPoint, double bounces_left)
 {
-    // If we've reached the maximum number of bounces, return black
-    if (max_bounces <= 0)
-    {
+    if (bounces_left <= 0) {
         return newColor(0, 0, 0);
     }
-    
+
+    Vector reflection = reflectVector(ray.direction, normal);
+
+    // Create a new ray with an offset origin
+    Ray new_ray = newRay(addVector(hitPoint, scaleVector(normal, EPSILON)), reflection);
+    Color indirect_color = rayColor(new_ray, world, bounces_left - 1);
+
+    // Modulate the indirect illumination with the base material color
+    indirect_color = mulColor(indirect_color, obj.material->color);
+
+    // If no object is hit by the reflected ray, return the background color
+    if (equalColor(indirect_color, newColor(0, 0, 0))) {
+        return backgroundColor(ray, world);
+    }
+
+    return indirect_color;
+}
+
+// Compute the color of a ray
+Color rayColor(Ray ray, World world, int max_bounces)
+{    
     double hit = -1;
     WorldObject *closestObject = getClosestHit(ray, world, &hit);
     if (closestObject != NULL)
@@ -169,7 +188,14 @@ Color rayColor(Ray ray, World world, int max_bounces)
 
         // Compute the direct illumination
         Color direct_color = computeDirectIllumination(ray, world, *closestObject, hitPoint, normal);
-        return direct_color;
+        
+        // Compute the indirect illumination
+        Color indirect_color = computeIndirectIllumination(ray, world, *closestObject, normal, hitPoint, max_bounces);
+
+        // Combine direct and indirect illumination, modulated by base material color
+        Color final_color = lerpColor(indirect_color, direct_color, 1-(closestObject->material->reflectivity));
+        final_color = mulColor(final_color, closestObject->material->color);
+        return final_color;
     }
 
     return backgroundColor(ray, world);
