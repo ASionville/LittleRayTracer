@@ -48,8 +48,11 @@ int main(int argc, char *argv[]) {
     addLightToWorld(world, light);
 
     int nb_threads = get_system_cores();
+    
+    printf("Rendering with %d threads...\n", nb_threads);
 
     Image image = renderMultiThreaded(&camera, world, SAMPLES_PER_PIXEL, MAX_DEPTH, 4, nb_threads);
     saveImage(image, "test.ppm");
+    
     printf("Done!\n");
 }
