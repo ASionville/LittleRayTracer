@@ -1,3 +1,4 @@
+#include <windows.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -49,4 +50,11 @@ Vector randomInUnitSphere()
 Vector randomUnitVector()
 {
     return normalizeVector(randomVector());
+}
+
+int get_system_cores()
+{
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo(&sysinfo);
+    return sysinfo.dwNumberOfProcessors;
 }

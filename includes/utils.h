@@ -12,4 +12,6 @@ Vector randomVectorRange(double min, double max);
 Vector randomInUnitSphere();
 Vector randomUnitVector();
 
+int get_system_cores();
+
 #endif // !UTILS_H

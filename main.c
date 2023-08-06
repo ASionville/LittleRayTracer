@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include "includes/utils.h"
 #include "includes/vector.h"
 #include "includes/camera.h"
 #include "includes/color.h"
@@ -46,7 +47,9 @@ int main(int argc, char *argv[]) {
     Light* light = newLight(newVector(0, 15, -0.5), newColor(1.0, 1.0, 1.0), 1.0);
     addLightToWorld(world, light);
 
-    Image image = render(camera, *world, SAMPLES_PER_PIXEL, MAX_DEPTH, GAMMA);
+    int nb_threads = get_system_cores();
+
+    Image image = renderMultiThreaded(&camera, world, SAMPLES_PER_PIXEL, MAX_DEPTH, 4, nb_threads);
     saveImage(image, "test.ppm");
     printf("Done!\n");
 }
