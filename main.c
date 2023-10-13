@@ -12,16 +12,51 @@
 #include "includes/light.h"
 #include "includes/world.h"
 
-#define WIDTH 500
-#define HEIGHT 400
-#define PI 3.14159265359
+int WIDTH = 1920;
+int HEIGHT = 1080;
+double PI = 3.14159265359;
 
-#define SAMPLES_PER_PIXEL 70
-#define MAX_DEPTH 10
+int SAMPLES_PER_PIXEL = 70;
+int MAX_DEPTH = 10;
 
-#define GAMMA 2.2
+double GAMMA = 2.2;
+
+char* OUTPUT_FILE = "output.ppm";
 
 int main(int argc, char *argv[]) {
+
+    // Usage : raytracer [width] [height] [samples per pixel] [max depth] [gamma] [output file]
+
+    if (argc > 1) {
+        WIDTH = atoi(argv[1]);
+    }
+
+    if (argc > 2) {
+        HEIGHT = atoi(argv[2]);
+    }
+
+    if (argc > 3) {
+        SAMPLES_PER_PIXEL = atoi(argv[3]);
+    }
+
+    if (argc > 4) {
+        MAX_DEPTH = atoi(argv[4]);
+    }
+
+    if (argc > 5) {
+        GAMMA = atof(argv[5]);
+    }
+
+    if (argc > 6) {
+        OUTPUT_FILE = argv[6];
+    }
+
+    printf("WIDTH: %d\n", WIDTH);
+    printf("HEIGHT: %d\n", HEIGHT);
+    printf("SAMPLES_PER_PIXEL: %d\n", SAMPLES_PER_PIXEL);
+    printf("MAX_DEPTH: %d\n", MAX_DEPTH);
+    printf("GAMMA: %f\n", GAMMA);
+    printf("OUTPUT_FILE: %s\n", OUTPUT_FILE);
 
     srand(time(NULL));
 
@@ -52,7 +87,7 @@ int main(int argc, char *argv[]) {
     printf("Rendering with %d threads...\n", nb_threads);
 
     Image image = renderMultiThreaded(&camera, world, SAMPLES_PER_PIXEL, MAX_DEPTH, 4, nb_threads);
-    saveImage(image, "test.ppm");
+    saveImage(image, OUTPUT_FILE);
     
     printf("Done!\n");
 }
