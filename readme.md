@@ -13,6 +13,9 @@ This is a little raytracer I wrote in C to learn more about ray tracing and to p
 - [x] Anti-aliasing
 - [x] Diffuse materials
 - [x] Camera
+- [x] Depth of field
+- [x] Gamma correction
+- [x] Multi-threading
 
 ## Usage
 - Compile all files : `gcc -o raytracer main.c includes/*.c;`
